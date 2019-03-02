@@ -87,25 +87,25 @@
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="Tinker原理解析补丁包生成原理Tinker打补丁主要为两个步骤：1.通过执行gradke task tinkerPatchDebug(Release)生成补丁包。2.通过tinkerInstaller将补丁包进行合成。 我们先来分析第一步：tinkerPatchDebug task包括两个步骤，1.执行debug生成修复代码之后的apk。2.执行tinkerPatch生成补丁包。  1-7：构">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="c:/Users/peyo/Desktop/图片资料/tinker接入实践/tinker原理解析/tinkerPatch相关流程.png">
-<meta property="og:image" content="c:/Users/peyo/Desktop/图片资料/tinker接入实践/tinker原理解析/生成class文件.jpg">
-<meta property="og:image" content="c:/Users/peyo/Desktop/图片资料/tinker接入实践/tinker原理解析/生成dex出错.jpg">
-<meta property="og:image" content="c:/Users/peyo/Desktop/图片资料/tinker接入实践/tinker原理解析/java%20class%20dex文件.jpg">
-<meta property="og:image" content="c:/Users/peyo/Desktop/图片资料/tinker接入实践/tinker原理解析/dex文件结构(1">
-<meta property="og:image" content="c:/Users/peyo/Desktop/图片资料/tinker接入实践/tinker原理解析/dex文件结构(2">
-<meta property="og:image" content="c:/Users/peyo/Desktop/图片资料/tinker接入实践/tinker原理解析/dex文件结构.jpg">
-<meta property="og:image" content="c:/Users/peyo/Desktop/图片资料/tinker接入实践/tinker原理解析/dex大致结构.jpg">
-<meta property="og:image" content="c:/Users/peyo/Desktop/图片资料/tinker接入实践/tinker原理解析/dex_header字段含义.jpg">
-<meta property="og:image" content="c:/Users/peyo/Desktop/图片资料/tinker接入实践/tinker原理解析/dex具体结构.jpg">
-<meta property="og:image" content="c:/Users/peyo/Desktop/图片资料/tinker接入实践/tinker原理解析/dex_map_list结构.jpg">
-<meta property="og:image" content="c:/Users/peyo/Desktop/图片资料/tinker接入实践/tinker原理解析/tinker打补丁包基础流程.png">
-<meta property="og:image" content="c:/Users/peyo/Desktop/图片资料/tinker接入实践/tinker原理解析/Hello.dex结构.jpg">
-<meta property="og:image" content="c:/Users/peyo/Desktop/图片资料/tinker接入实践/tinker原理解析/World.dex结构.jpg">
-<meta property="og:updated_time" content="2019-03-02T06:47:44.052Z">
+<meta property="og:image" content="https://s2.ax1x.com/2019/03/02/kbzra8.png">
+<meta property="og:image" content="https://s2.ax1x.com/2019/03/02/kbzt8H.png">
+<meta property="og:image" content="https://s2.ax1x.com/2019/03/02/kbzN2d.png">
+<meta property="og:image" content="https://s2.ax1x.com/2019/03/02/kbzDVf.png">
+<meta property="og:image" content="https://s2.ax1x.com/2019/03/02/kbzwrt.png">
+<meta property="og:image" content="https://s2.ax1x.com/2019/03/02/kbzdKI.png">
+<meta property="og:image" content="https://s2.ax1x.com/2019/03/02/kbzUxA.png">
+<meta property="og:image" content="https://s2.ax1x.com/2019/03/02/kbz0qP.png">
+<meta property="og:image" content="https://s2.ax1x.com/2019/03/02/kbz3VK.png">
+<meta property="og:image" content="https://s2.ax1x.com/2019/03/02/kbzYPe.png">
+<meta property="og:image" content="https://s2.ax1x.com/2019/03/02/kbzG5D.png">
+<meta property="og:image" content="https://s2.ax1x.com/2019/03/02/kbzsIS.png">
+<meta property="og:image" content="https://s2.ax1x.com/2019/03/02/kbz6Pg.png">
+<meta property="og:image" content="https://s2.ax1x.com/2019/03/02/kbzcGQ.png">
+<meta property="og:updated_time" content="2019-03-02T08:14:18.379Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Tinker原理解析">
 <meta name="twitter:description" content="Tinker原理解析补丁包生成原理Tinker打补丁主要为两个步骤：1.通过执行gradke task tinkerPatchDebug(Release)生成补丁包。2.通过tinkerInstaller将补丁包进行合成。 我们先来分析第一步：tinkerPatchDebug task包括两个步骤，1.执行debug生成修复代码之后的apk。2.执行tinkerPatch生成补丁包。  1-7：构">
-<meta name="twitter:image" content="c:/Users/peyo/Desktop/图片资料/tinker接入实践/tinker原理解析/tinkerPatch相关流程.png">
+<meta name="twitter:image" content="https://s2.ax1x.com/2019/03/02/kbzra8.png">
 
 
 
@@ -337,7 +337,7 @@
       
         <h4 id="Tinker原理解析"><a href="#Tinker原理解析" class="headerlink" title="Tinker原理解析"></a>Tinker原理解析</h4><h5 id="补丁包生成原理"><a href="#补丁包生成原理" class="headerlink" title="补丁包生成原理"></a>补丁包生成原理</h5><p>Tinker打补丁主要为两个步骤：1.通过执行gradke task tinkerPatchDebug(Release)生成补丁包。2.通过tinkerInstaller将补丁包进行合成。</p>
 <p>我们先来分析第一步：tinkerPatchDebug task包括两个步骤，1.执行debug生成修复代码之后的apk。2.执行tinkerPatch生成补丁包。</p>
-<p><img src="C:\Users\peyo\Desktop\图片资料\tinker接入实践\tinker原理解析\tinkerPatch相关流程.png" alt="tinkerPatch相关流程"></p>
+<p><img src="https://s2.ax1x.com/2019/03/02/kbzra8.png" alt="tinkerPatch相关流程"></p>
 <p>1-7：构建gradle tinkerPatch task</p>
 <p>8-9：将新旧apk对比构建补丁包：将两个apk的内容读取到流中，对比是否有新添加的class文件</p>
 <p>10-15：将apk以流的形式读取，进行对比</p>
@@ -348,28 +348,28 @@
 <h5 id="知识准备"><a href="#知识准备" class="headerlink" title="知识准备"></a>知识准备</h5><h6 id="生成dex"><a href="#生成dex" class="headerlink" title="生成dex"></a>生成dex</h6><p>编写一个Hello.java文件：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public class Hello &#123;</span><br><span class="line">    public static void main(String[] args)&#123;</span><br><span class="line">        System.out.println(&quot;hello dex!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>生成Hello.class文件：</p>
-<p><img src="C:\Users\peyo\Desktop\图片资料\tinker接入实践\tinker原理解析\生成class文件.jpg" alt="生成class文件"></p>
+<p><img src="https://s2.ax1x.com/2019/03/02/kbzt8H.png" alt="生成class文件"></p>
 <p>然后把java文件和class文件放到sdk-&gt;build-tools-&gt;23.0.1中，生成dex文件：</p>
-<p><img src="C:\Users\peyo\Desktop\图片资料\tinker接入实践\tinker原理解析\生成dex出错.jpg" alt="生成dex出错"></p>
+<p><img src="https://s2.ax1x.com/2019/03/02/kbzN2d.png" alt="生成dex出错"></p>
 <p>会发现放在23.0.1下边出错，我把它放到28.0.2下边就正常了，可能低版本有点问题。最后会有3个文件：</p>
-<p><img src="C:\Users\peyo\Desktop\图片资料\tinker接入实践\tinker原理解析\java class dex文件.jpg" alt="java class dex文件"></p>
+<p><img src="https://s2.ax1x.com/2019/03/02/kbzDVf.png" alt="java class dex文件"></p>
 <p><a href="https://source.android.com/devices/tech/dalvik/dex-format.html" target="_blank" rel="noopener">dex的内部结构</a>如下</p>
-<p><img src="C:\Users\peyo\Desktop\图片资料\tinker接入实践\tinker原理解析\dex文件结构(1" alt="dex文件结构(1)">.jpg)</p>
-<p><img src="C:\Users\peyo\Desktop\图片资料\tinker接入实践\tinker原理解析\dex文件结构(2" alt="dex文件结构(2)">.jpg)</p>
+<p><img src="https://s2.ax1x.com/2019/03/02/kbzwrt.png" alt="dex文件结构(1)"></p>
+<p><img src="https://s2.ax1x.com/2019/03/02/kbzdKI.png" alt="dex文件结构(2)"></p>
 <p>下边这张图更直观一点：</p>
-<p><img src="C:\Users\peyo\Desktop\图片资料\tinker接入实践\tinker原理解析\dex文件结构.jpg" alt="dex文件结构"></p>
+<p><img src="https://s2.ax1x.com/2019/03/02/kbzUxA.png" alt="dex文件结构"></p>
 <p>dex是使用LEB128编码的，用<a href="http://www.sweetscape.com/010editor/" target="_blank" rel="noopener">010Editor</a>可以看dex文件。可以看到010Editor解析出来的数据基本跟dex文件结构对应，link_data在010Editor中表示为map_list</p>
-<p><img src="C:\Users\peyo\Desktop\图片资料\tinker接入实践\tinker原理解析\dex大致结构.jpg" alt="dex大致结构"></p>
+<p><img src="https://s2.ax1x.com/2019/03/02/kbz0qP.png" alt="dex大致结构"></p>
 <p>这里我们主要对dex_header和map_list做大致的分析：</p>
 <p><strong>dex_header</strong>：</p>
 <p>magic：魔法值DEX_FILE_MAGIC。用来标识是dex文件，java的魔法值是CAFFEEBABE。</p>
 <p>其他相关字段含义：</p>
-<p><img src="C:\Users\peyo\Desktop\图片资料\tinker接入实践\tinker原理解析\dex_header字段含义.jpg" alt="dex_header字段含义"></p>
+<p><img src="https://s2.ax1x.com/2019/03/02/kbz3VK.png" alt="dex_header字段含义"></p>
 <p>注意，从下面的图中可以看到，dex_header中的string_ids_size,string_ids_off这种成对出现的分别代表大小和偏移量，对应着下面出现的其他表的数据。</p>
-<p><img src="C:\Users\peyo\Desktop\图片资料\tinker接入实践\tinker原理解析\dex具体结构.jpg" alt="dex具体结构"></p>
+<p><img src="https://s2.ax1x.com/2019/03/02/kbzYPe.png" alt="dex具体结构"></p>
 <p><strong>dex_map_list</strong></p>
 <p>其对应的结构如下：</p>
-<p><img src="C:\Users\peyo\Desktop\图片资料\tinker接入实践\tinker原理解析\dex_map_list结构.jpg" alt="dex_map_list结构"></p>
+<p><img src="https://s2.ax1x.com/2019/03/02/kbzG5D.png" alt="dex_map_list结构"></p>
 <p>每个map_item_list包含一个enum表示类型,一个ushort未使用的成员,一个uint表示当前类型的个数，一个uint表示当前类型偏移量。</p>
 <p>首先是TYPE_HEADER_ITEM类型，包含1个header（size=1），偏移量为0</p>
 <p>然后是TYPE_STRING_ID_ITEM,包含14个string_id_item(size=14),偏移量为112.跟前面dex_header中的数据是一样的。</p>
@@ -471,7 +471,7 @@
 <p>5.最后将合并后的数组，设置给pathList。</p>
 <p><strong>合成补丁</strong></p>
 <p>在sample中是在点击Button的时候调用TinkerInstaller.onReceiveUpgradePatch(Context context, String patchLocation)方法来加载补丁，其流程如下：</p>
-<p><img src="C:\Users\peyo\Desktop\图片资料\tinker接入实践\tinker原理解析\tinker打补丁包基础流程.png" alt="tinker打补丁包基础流程"></p>
+<p><img src="https://s2.ax1x.com/2019/03/02/kbzsIS.png" alt="tinker打补丁包基础流程"></p>
 <p>1-5：加载补丁文件</p>
 <p>6-9：启动一个JobSeheduler来处理任务</p>
 <p>10-13：启动一个AsyncTask在执行补丁包合成的任务</p>
@@ -483,8 +483,8 @@
 <h5 id="具体案例分析"><a href="#具体案例分析" class="headerlink" title="具体案例分析"></a>具体案例分析</h5><p>我分别编写了2个java文件，Hello.java和World.java</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public class Hello &#123;</span><br><span class="line">    public static void main(String[] args)&#123;</span><br><span class="line">        System.out.println(&quot;hello dex!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">public class World&#123;</span><br><span class="line">    public static void main(String[] args)&#123;</span><br><span class="line">        System.out.println(&quot;nani World&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>Hello.dex和World.dex结构分别如下：</p>
-<p><img src="C:\Users\peyo\Desktop\图片资料\tinker接入实践\tinker原理解析\Hello.dex结构.jpg" alt="Hello.dex结构"></p>
-<p><img src="C:\Users\peyo\Desktop\图片资料\tinker接入实践\tinker原理解析\World.dex结构.jpg" alt="World.dex结构"></p>
+<p><img src="https://s2.ax1x.com/2019/03/02/kbz6Pg.png" alt="Hello.dex结构"></p>
+<p><img src="https://s2.ax1x.com/2019/03/02/kbzcGQ.png" alt="World.dex结构"></p>
 <p>按照之前的diff算法，得到以下操作：</p>
 <p>del 1 </p>
 <p>del 2 </p>
