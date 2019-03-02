@@ -79,23 +79,23 @@
 
 
 
-<meta name="description" content="[TOC] 热修复方案对比热修复简介正常开发流程 需要用户主动去下载更新app，修复时间较长。apk文件大。 热修复开发流程  只要打开app就能自动更新。补丁包小。快速修复bug。 冷启动代码修复方案腾讯系 Tinker 原理  一个ClassLoadere可以包含多个dex文件，每个dex文件是一个Element，多个dex文件排列成一个有序的数组dexElements，当查找类的时候，按顺">
+<meta name="description" content="热修复方案对比热修复简介正常开发流程 需要用户主动去下载更新app，修复时间较长。apk文件大。 热修复开发流程  只要打开app就能自动更新。补丁包小。快速修复bug。 冷启动代码修复方案腾讯系 Tinker 原理  一个ClassLoadere可以包含多个dex文件，每个dex文件是一个Element，多个dex文件排列成一个有序的数组dexElements，当查找类的时候，按顺序遍历dex文">
 <meta name="keywords" content="hotfix">
 <meta property="og:type" content="article">
-<meta property="og:title" content="[object Object]">
+<meta property="og:title" content="热修复方案对比">
 <meta property="og:url" content="https://youuupeng.github.io/2019/01/28/热修复方案对比/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="[TOC] 热修复方案对比热修复简介正常开发流程 需要用户主动去下载更新app，修复时间较长。apk文件大。 热修复开发流程  只要打开app就能自动更新。补丁包小。快速修复bug。 冷启动代码修复方案腾讯系 Tinker 原理  一个ClassLoadere可以包含多个dex文件，每个dex文件是一个Element，多个dex文件排列成一个有序的数组dexElements，当查找类的时候，按顺">
+<meta property="og:description" content="热修复方案对比热修复简介正常开发流程 需要用户主动去下载更新app，修复时间较长。apk文件大。 热修复开发流程  只要打开app就能自动更新。补丁包小。快速修复bug。 冷启动代码修复方案腾讯系 Tinker 原理  一个ClassLoadere可以包含多个dex文件，每个dex文件是一个Element，多个dex文件排列成一个有序的数组dexElements，当查找类的时候，按顺序遍历dex文">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://s2.ax1x.com/2019/01/14/Fx1DED.png">
 <meta property="og:image" content="https://s2.ax1x.com/2019/01/14/Fx1du6.png">
 <meta property="og:image" content="https://s2.ax1x.com/2019/01/14/Fx1Ujx.png">
 <meta property="og:image" content="https://s2.ax1x.com/2019/01/14/Fx10HO.png">
 <meta property="og:image" content="https://s2.ax1x.com/2019/01/14/Fx1wDK.png">
-<meta property="og:updated_time" content="2019-03-02T06:41:44.180Z">
+<meta property="og:updated_time" content="2019-03-02T06:45:00.407Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="[object Object]">
-<meta name="twitter:description" content="[TOC] 热修复方案对比热修复简介正常开发流程 需要用户主动去下载更新app，修复时间较长。apk文件大。 热修复开发流程  只要打开app就能自动更新。补丁包小。快速修复bug。 冷启动代码修复方案腾讯系 Tinker 原理  一个ClassLoadere可以包含多个dex文件，每个dex文件是一个Element，多个dex文件排列成一个有序的数组dexElements，当查找类的时候，按顺">
+<meta name="twitter:title" content="热修复方案对比">
+<meta name="twitter:description" content="热修复方案对比热修复简介正常开发流程 需要用户主动去下载更新app，修复时间较长。apk文件大。 热修复开发流程  只要打开app就能自动更新。补丁包小。快速修复bug。 冷启动代码修复方案腾讯系 Tinker 原理  一个ClassLoadere可以包含多个dex文件，每个dex文件是一个Element，多个dex文件排列成一个有序的数组dexElements，当查找类的时候，按顺序遍历dex文">
 <meta name="twitter:image" content="https://s2.ax1x.com/2019/01/14/Fx1DED.png">
 
 
@@ -132,7 +132,7 @@
 
 
 
-  <title>[object Object] | Hexo</title>
+  <title>热修复方案对比 | Hexo</title>
   
 
 
@@ -276,7 +276,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">[object Object]</h1>
+          <h1 class="post-title" itemprop="name headline">热修复方案对比</h1>
         
 
         <div class="post-meta">
@@ -326,9 +326,7 @@
       
 
       
-        <hr>
-<p>[TOC]</p>
-<h1 id="热修复方案对比"><a href="#热修复方案对比" class="headerlink" title="热修复方案对比"></a>热修复方案对比</h1><h3 id="热修复简介"><a href="#热修复简介" class="headerlink" title="热修复简介"></a>热修复简介</h3><p><strong>正常开发流程</strong></p>
+        <h1 id="热修复方案对比"><a href="#热修复方案对比" class="headerlink" title="热修复方案对比"></a>热修复方案对比</h1><h3 id="热修复简介"><a href="#热修复简介" class="headerlink" title="热修复简介"></a>热修复简介</h3><p><strong>正常开发流程</strong></p>
 <p><img src="https://s2.ax1x.com/2019/01/14/Fx1DED.png" alt="正常开发流程">需要用户主动去下载更新app，修复时间较长。apk文件大。</p>
 <p><strong>热修复开发流程</strong></p>
 <p><img src="https://s2.ax1x.com/2019/01/14/Fx1du6.png" alt="热修复开发流程"></p>
