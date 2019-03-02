@@ -87,16 +87,16 @@
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="热修复方案对比热修复简介正常开发流程 需要用户主动去下载更新app，修复时间较长。apk文件大。 热修复开发流程  只要打开app就能自动更新。补丁包小。快速修复bug。 冷启动代码修复方案腾讯系 Tinker 原理  一个ClassLoadere可以包含多个dex文件，每个dex文件是一个Element，多个dex文件排列成一个有序的数组dexElements，当查找类的时候，按顺序遍历dex文">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://s2.ax1x.com/2019/01/14/Fx1DED.png">
-<meta property="og:image" content="https://s2.ax1x.com/2019/01/14/Fx1du6.png">
-<meta property="og:image" content="https://s2.ax1x.com/2019/01/14/Fx1Ujx.png">
-<meta property="og:image" content="https://s2.ax1x.com/2019/01/14/Fx10HO.png">
-<meta property="og:image" content="https://s2.ax1x.com/2019/01/14/Fx1wDK.png">
-<meta property="og:updated_time" content="2019-03-02T06:45:00.407Z">
+<meta property="og:image" content="https://s2.ax1x.com/2019/03/02/kbx2B6.png">
+<meta property="og:image" content="https://s2.ax1x.com/2019/03/02/kbxRHK.png">
+<meta property="og:image" content="https://s2.ax1x.com/2019/03/02/kbxfAO.png">
+<meta property="og:image" content="https://s2.ax1x.com/2019/03/02/kbxhND.png">
+<meta property="og:image" content="https://s2.ax1x.com/2019/03/02/kbxI9H.png">
+<meta property="og:updated_time" content="2019-03-02T07:58:13.891Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="热修复方案对比">
 <meta name="twitter:description" content="热修复方案对比热修复简介正常开发流程 需要用户主动去下载更新app，修复时间较长。apk文件大。 热修复开发流程  只要打开app就能自动更新。补丁包小。快速修复bug。 冷启动代码修复方案腾讯系 Tinker 原理  一个ClassLoadere可以包含多个dex文件，每个dex文件是一个Element，多个dex文件排列成一个有序的数组dexElements，当查找类的时候，按顺序遍历dex文">
-<meta name="twitter:image" content="https://s2.ax1x.com/2019/01/14/Fx1DED.png">
+<meta name="twitter:image" content="https://s2.ax1x.com/2019/03/02/kbx2B6.png">
 
 
 
@@ -327,11 +327,11 @@
 
       
         <h1 id="热修复方案对比"><a href="#热修复方案对比" class="headerlink" title="热修复方案对比"></a>热修复方案对比</h1><h3 id="热修复简介"><a href="#热修复简介" class="headerlink" title="热修复简介"></a>热修复简介</h3><p><strong>正常开发流程</strong></p>
-<p><img src="https://s2.ax1x.com/2019/01/14/Fx1DED.png" alt="正常开发流程">需要用户主动去下载更新app，修复时间较长。apk文件大。</p>
+<p><img src="https://s2.ax1x.com/2019/03/02/kbx2B6.png" alt="正常开发流程">需要用户主动去下载更新app，修复时间较长。apk文件大。</p>
 <p><strong>热修复开发流程</strong></p>
-<p><img src="https://s2.ax1x.com/2019/01/14/Fx1du6.png" alt="热修复开发流程"></p>
+<p><img src="https://s2.ax1x.com/2019/03/02/kbxRHK.png" alt="热修复开发流程"></p>
 <p>只要打开app就能自动更新。补丁包小。快速修复bug。</p>
-<h3 id="冷启动代码修复方案"><a href="#冷启动代码修复方案" class="headerlink" title="冷启动代码修复方案"></a>冷启动代码修复方案</h3><h4 id="腾讯系"><a href="#腾讯系" class="headerlink" title="腾讯系"></a>腾讯系</h4><p><img src="https://s2.ax1x.com/2019/01/14/Fx1Ujx.png" alt="腾讯系热修复方案"></p>
+<h3 id="冷启动代码修复方案"><a href="#冷启动代码修复方案" class="headerlink" title="冷启动代码修复方案"></a>冷启动代码修复方案</h3><h4 id="腾讯系"><a href="#腾讯系" class="headerlink" title="腾讯系"></a>腾讯系</h4><p><img src="https://s2.ax1x.com/2019/03/02/kbxfAO.png" alt="腾讯系热修复方案"></p>
 <h5 id="Tinker"><a href="#Tinker" class="headerlink" title="Tinker"></a>Tinker</h5><ul>
 <li>原理</li>
 </ul>
@@ -367,7 +367,7 @@
 <p>Amigo同其他方案的区别在于能够增加四大组件。其实现方式其实就是类似插件化的原理，因为其补丁包是apk的形式，Activity通过hook加载流程，打开对应launch mode的StubActivity，再反射注入新Activity的实例;Service、Provider也是通过ServiceStub、ProviderStub实现；BroadcastReceiver是变静态注册为动态注册实现的。</p>
 <p>以Activity的启动时序为例，标注出其中的hook点：</p>
 <ul>
-<li><img src="https://s2.ax1x.com/2019/01/14/Fx10HO.png" alt="activity hook">差分实现</li>
+<li><img src="https://s2.ax1x.com/2019/03/02/kbxhND.png" alt="activity hook">差分实现</li>
 </ul>
 <p>一般情况下，是通过下发完整的apk，但是如果全量下发会存在下发成功率的问题。因此在Amigo可以自己实现差分算法，Amigo也提供了基于APK内部细粒度的ZipPatch，也可以自己选择GooglePlay上的archive-patcher，也可以是自己实现的差分算法。</p>
 <h5 id="局限"><a href="#局限" class="headerlink" title="局限"></a>局限</h5><ul>
@@ -388,7 +388,7 @@
 </ul>
 </li>
 </ul>
-<h3 id="热替换代码修复-amp-amp-冷启动代码修复"><a href="#热替换代码修复-amp-amp-冷启动代码修复" class="headerlink" title="热替换代码修复 &amp;&amp; 冷启动代码修复"></a>热替换代码修复 &amp;&amp; 冷启动代码修复</h3><h5 id="阿里系"><a href="#阿里系" class="headerlink" title="阿里系"></a>阿里系</h5><p><img src="https://s2.ax1x.com/2019/01/14/Fx1wDK.png" alt="阿里系热修复方案"></p>
+<h3 id="热替换代码修复-amp-amp-冷启动代码修复"><a href="#热替换代码修复-amp-amp-冷启动代码修复" class="headerlink" title="热替换代码修复 &amp;&amp; 冷启动代码修复"></a>热替换代码修复 &amp;&amp; 冷启动代码修复</h3><h5 id="阿里系"><a href="#阿里系" class="headerlink" title="阿里系"></a>阿里系</h5><p><img src="https://s2.ax1x.com/2019/03/02/kbxI9H.png" alt="阿里系热修复方案"></p>
 <p>Sophix方案是同时支持即时生效和冷启动修复</p>
 <h6 id="热替换代码修复原理"><a href="#热替换代码修复原理" class="headerlink" title="热替换代码修复原理"></a>热替换代码修复原理</h6><p>在旧的热替换方案Andfix方案中，是通过直接在已经加载的类中的native层替换掉原有方法，是在原有类的基础上进行修改的。每一个Java方法在Art虚拟机中对应着一个ArtMethod，ArtMethod中记录了这个Java方法的所有信息，包括所属类、访问权限，代码执行地址等。因此通过构造一个新的ArtMethod，将其所有字段替换掉原有ArtMethod的所有字段，可以实现代码的替换。</p>
 <p>但是由于各手机厂商是能够对ArtMethod结构体进行修改，如果对其进行了修改，就和原有开源代码里的结构不一致，那么这种替换机制就会出问题。因此，这种方案的最大的问题就在于依赖于ArtMethod等ROM底层方法结构而导致的兼容性问题，在一些修改了底层的虚拟机结构的机器就无法支持。</p>
