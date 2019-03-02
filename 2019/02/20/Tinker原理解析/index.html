@@ -79,13 +79,32 @@
 
 
 
-<meta property="og:type" content="website">
+<meta name="description" content="title:Tinker原理解析  [TOC] Tinker原理解析补丁包生成原理Tinker打补丁主要为两个步骤：1.通过执行gradke task tinkerPatchDebug(Release)生成补丁包。2.通过tinkerInstaller将补丁包进行合成。 我们先来分析第一步：tinkerPatchDebug task包括两个步骤，1.执行debug生成修复代码之后的apk。2.执行">
+<meta property="og:type" content="article">
 <meta property="og:title" content="Hexo">
-<meta property="og:url" content="https://youuupeng.github.io/index.html">
+<meta property="og:url" content="https://youuupeng.github.io/2019/02/20/Tinker原理解析/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="title:Tinker原理解析  [TOC] Tinker原理解析补丁包生成原理Tinker打补丁主要为两个步骤：1.通过执行gradke task tinkerPatchDebug(Release)生成补丁包。2.通过tinkerInstaller将补丁包进行合成。 我们先来分析第一步：tinkerPatchDebug task包括两个步骤，1.执行debug生成修复代码之后的apk。2.执行">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="c:/Users/peyo/Desktop/图片资料/tinker接入实践/tinker原理解析/tinkerPatch相关流程.png">
+<meta property="og:image" content="c:/Users/peyo/Desktop/图片资料/tinker接入实践/tinker原理解析/生成class文件.jpg">
+<meta property="og:image" content="c:/Users/peyo/Desktop/图片资料/tinker接入实践/tinker原理解析/生成dex出错.jpg">
+<meta property="og:image" content="c:/Users/peyo/Desktop/图片资料/tinker接入实践/tinker原理解析/java%20class%20dex文件.jpg">
+<meta property="og:image" content="c:/Users/peyo/Desktop/图片资料/tinker接入实践/tinker原理解析/dex文件结构(1">
+<meta property="og:image" content="c:/Users/peyo/Desktop/图片资料/tinker接入实践/tinker原理解析/dex文件结构(2">
+<meta property="og:image" content="c:/Users/peyo/Desktop/图片资料/tinker接入实践/tinker原理解析/dex文件结构.jpg">
+<meta property="og:image" content="c:/Users/peyo/Desktop/图片资料/tinker接入实践/tinker原理解析/dex大致结构.jpg">
+<meta property="og:image" content="c:/Users/peyo/Desktop/图片资料/tinker接入实践/tinker原理解析/dex_header字段含义.jpg">
+<meta property="og:image" content="c:/Users/peyo/Desktop/图片资料/tinker接入实践/tinker原理解析/dex具体结构.jpg">
+<meta property="og:image" content="c:/Users/peyo/Desktop/图片资料/tinker接入实践/tinker原理解析/dex_map_list结构.jpg">
+<meta property="og:image" content="c:/Users/peyo/Desktop/图片资料/tinker接入实践/tinker原理解析/tinker打补丁包基础流程.png">
+<meta property="og:image" content="c:/Users/peyo/Desktop/图片资料/tinker接入实践/tinker原理解析/Hello.dex结构.jpg">
+<meta property="og:image" content="c:/Users/peyo/Desktop/图片资料/tinker接入实践/tinker原理解析/World.dex结构.jpg">
+<meta property="og:updated_time" content="2019-03-02T06:37:37.903Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Hexo">
+<meta name="twitter:description" content="title:Tinker原理解析  [TOC] Tinker原理解析补丁包生成原理Tinker打补丁主要为两个步骤：1.通过执行gradke task tinkerPatchDebug(Release)生成补丁包。2.通过tinkerInstaller将补丁包进行合成。 我们先来分析第一步：tinkerPatchDebug task包括两个步骤，1.执行debug生成修复代码之后的apk。2.执行">
+<meta name="twitter:image" content="c:/Users/peyo/Desktop/图片资料/tinker接入实践/tinker原理解析/tinkerPatch相关流程.png">
 
 
 
@@ -115,13 +134,13 @@
 
 
 
-  <link rel="canonical" href="https://youuupeng.github.io/">
+  <link rel="canonical" href="https://youuupeng.github.io/2019/02/20/Tinker原理解析/">
 
 
 
 
 
-  <title>Hexo</title>
+  <title> | Hexo</title>
   
 
 
@@ -140,8 +159,7 @@
     
   
 
-  <div class="container sidebar-position-left 
-  page-home">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -234,9 +252,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
 
@@ -266,9 +284,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/02/20/Tinker原理解析/" itemprop="url">未命名</a></h1>
+          <h1 class="post-title" itemprop="name headline"></h1>
         
 
         <div class="post-meta">
@@ -318,9 +334,7 @@
       
 
       
-        
-          
-            <p>title:Tinker原理解析</p>
+        <p>title:Tinker原理解析</p>
 <hr>
 <p>[TOC]</p>
 <h4 id="Tinker原理解析"><a href="#Tinker原理解析" class="headerlink" title="Tinker原理解析"></a>Tinker原理解析</h4><h5 id="补丁包生成原理"><a href="#补丁包生成原理" class="headerlink" title="补丁包生成原理"></a>补丁包生成原理</h5><p>Tinker打补丁主要为两个步骤：1.通过执行gradke task tinkerPatchDebug(Release)生成补丁包。2.通过tinkerInstaller将补丁包进行合成。</p>
@@ -521,8 +535,6 @@
 <h4 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h4><p><a href="https://blog.csdn.net/lmj623565791/article/details/60874334#t6" target="_blank" rel="noopener">Android 热修复 Tinker 源码分析之DexDiff / DexPatch</a></p>
 <p><a href="https://www.zybuluo.com/dodola/note/554061" target="_blank" rel="noopener">Tinker</a></p>
 
-          
-        
       
     </div>
     
@@ -539,269 +551,28 @@
       
 
       
-
-      
-
       
       
-        <div class="post-eof"></div>
+
       
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://youuupeng.github.io/2019/01/28/热修复方案对比/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="youpeng">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/01/28/热修复方案对比/" itemprop="url">未命名</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
             
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-28T13:49:34+08:00">
-                2019-01-28
-              </time>
+              <a href="/2019/01/28/热修复方案对比/" rel="next" title>
+                <i class="fa fa-chevron-left"></i> 
+              </a>
             
+          </div>
 
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
             
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
+          </div>
         </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
       
 
       
-        
-          
-            <p>title:热修复方案对比</p>
-<hr>
-<p>[TOC]</p>
-<h1 id="热修复方案对比"><a href="#热修复方案对比" class="headerlink" title="热修复方案对比"></a>热修复方案对比</h1><h3 id="热修复简介"><a href="#热修复简介" class="headerlink" title="热修复简介"></a>热修复简介</h3><p><strong>正常开发流程</strong></p>
-<p><img src="https://s2.ax1x.com/2019/01/14/Fx1DED.png" alt="正常开发流程">需要用户主动去下载更新app，修复时间较长。apk文件大。</p>
-<p><strong>热修复开发流程</strong></p>
-<p><img src="https://s2.ax1x.com/2019/01/14/Fx1du6.png" alt="热修复开发流程"></p>
-<p>只要打开app就能自动更新。补丁包小。快速修复bug。</p>
-<h3 id="冷启动代码修复方案"><a href="#冷启动代码修复方案" class="headerlink" title="冷启动代码修复方案"></a>冷启动代码修复方案</h3><h4 id="腾讯系"><a href="#腾讯系" class="headerlink" title="腾讯系"></a>腾讯系</h4><p><img src="https://s2.ax1x.com/2019/01/14/Fx1Ujx.png" alt="腾讯系热修复方案"></p>
-<h5 id="Tinker"><a href="#Tinker" class="headerlink" title="Tinker"></a>Tinker</h5><ul>
-<li>原理</li>
-</ul>
-<p>一个ClassLoadere可以包含多个dex文件，每个dex文件是一个Element，多个dex文件排列成一个有序的数组dexElements，当查找类的时候，按顺序遍历dex文件，然后从当前遍历的dex文件中找类，如果找到类则返回，如果找不到从下一个dex文件继续查找。因此，通过把有问题的类修复之后打包到一个dex中，然后把这个dex插入到Elements的最前面就可以实现类的替换，从而解决这个类的bug。</p>
-<p>Tinker提供dex差量包patch.dex的形式，然后将patch.dex与原应用的classes.dex合并成一个完整的dex，完整dex加载得到的dexFile对象作为参数构建一个Element对象然后整体替换掉旧的dexElements数组。</p>
-<ul>
-<li>优点</li>
-</ul>
-<p>极致的dex补丁差量操作。生成的补丁包时比较粒度十分精细，实现了代码级别的差异比较，而不是传统的BsDiff算法。合成的时候也是根据补丁和原有的apk的dex进行精细的合成操作。</p>
-<ul>
-<li>缺陷</li>
-</ul>
-<p>1.由于其精细合成的问题在于性能损耗，dex合成是在一个单独的进程中进行的。dex merge操作是在java heap上进行的，如果此时进程申请的java heap对象超过了vm heap规定的大小，进程OOM，memory killer可能会杀掉该进程，导致dex合成失败。</p>
-<p>打补丁包的成功取决于合成操作的成功率。</p>
-<ul>
-<li><p>已知问题</p>
-<p>1.在AndroidN上，补丁对应用启动时间有轻微的影响。</p>
-<p>2.不支持一些操作系统是android-21的部分三星手机，加载补丁时会主动抛出”TinkerRuntimeException:checkDexInstall failed”</p>
-<p>3.对于资源替换，不支持remoteView.例如transition动画，notification icon以及桌面图标。</p>
-</li>
-</ul>
-<h4 id="Amigo"><a href="#Amigo" class="headerlink" title="Amigo"></a>Amigo</h4><ul>
-<li>核心实现</li>
-</ul>
-<p>主要介绍一下Amigo和其他方案的不同点，以及其实现原理。</p>
-<ul>
-<li>修复class</li>
-</ul>
-<p>上边说到腾讯系的方案是反射操作DexPathList中的dexElements。Amigo的补丁包是一个完整全新的apk，解压dex后，先对所有的dex文件进行dexopt/dex2oat操作，然后重新构建一个ClassLoader。其目的是为了1：加快启动的速度。2.不需要大量的反射处理提升了兼容性。</p>
-<ul>
-<li>增加四大组件</li>
-</ul>
-<p>Amigo同其他方案的区别在于能够增加四大组件。其实现方式其实就是类似插件化的原理，因为其补丁包是apk的形式，Activity通过hook加载流程，打开对应launch mode的StubActivity，再反射注入新Activity的实例;Service、Provider也是通过ServiceStub、ProviderStub实现；BroadcastReceiver是变静态注册为动态注册实现的。</p>
-<p>以Activity的启动时序为例，标注出其中的hook点：</p>
-<ul>
-<li><img src="https://s2.ax1x.com/2019/01/14/Fx10HO.png" alt="activity hook">差分实现</li>
-</ul>
-<p>一般情况下，是通过下发完整的apk，但是如果全量下发会存在下发成功率的问题。因此在Amigo可以自己实现差分算法，Amigo也提供了基于APK内部细粒度的ZipPatch，也可以自己选择GooglePlay上的archive-patcher，也可以是自己实现的差分算法。</p>
-<h5 id="局限"><a href="#局限" class="headerlink" title="局限"></a>局限</h5><ul>
-<li><p>不支持和Instant Run同时使用</p>
-</li>
-<li><p>Amigo的实现是通过单一ClassLoader、单一AssetManager的app，在一些多classloader的插件化框架中可能不兼容</p>
-</li>
-<li><p>RemoteViews的自定义布局不支持修改，只支持内容修复</p>
-</li>
-<li><p>Amigo相对于其他方案来说，其能够实现四大组件的增加。</p>
-</li>
-<li><p>其最大的缺陷在于补丁包是一个完成的apk，对于大一点的app很大程度上限制的下发成功率。以及其差分粒度是不如DexDiff。</p>
-<h5 id="使用风险"><a href="#使用风险" class="headerlink" title="使用风险"></a>使用风险</h5><ul>
-<li><p>后台服务Amigo平台已不再支持Amigo服务</p>
-</li>
-<li><p>随着amigo的核心人员去了阿里和其他公司，两三年前已停止维护</p>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="热替换代码修复-amp-amp-冷启动代码修复"><a href="#热替换代码修复-amp-amp-冷启动代码修复" class="headerlink" title="热替换代码修复 &amp;&amp; 冷启动代码修复"></a>热替换代码修复 &amp;&amp; 冷启动代码修复</h3><h5 id="阿里系"><a href="#阿里系" class="headerlink" title="阿里系"></a>阿里系</h5><p><img src="https://s2.ax1x.com/2019/01/14/Fx1wDK.png" alt="阿里系热修复方案"></p>
-<p>Sophix方案是同时支持即时生效和冷启动修复</p>
-<h6 id="热替换代码修复原理"><a href="#热替换代码修复原理" class="headerlink" title="热替换代码修复原理"></a>热替换代码修复原理</h6><p>在旧的热替换方案Andfix方案中，是通过直接在已经加载的类中的native层替换掉原有方法，是在原有类的基础上进行修改的。每一个Java方法在Art虚拟机中对应着一个ArtMethod，ArtMethod中记录了这个Java方法的所有信息，包括所属类、访问权限，代码执行地址等。因此通过构造一个新的ArtMethod，将其所有字段替换掉原有ArtMethod的所有字段，可以实现代码的替换。</p>
-<p>但是由于各手机厂商是能够对ArtMethod结构体进行修改，如果对其进行了修改，就和原有开源代码里的结构不一致，那么这种替换机制就会出问题。因此，这种方案的最大的问题就在于依赖于ArtMethod等ROM底层方法结构而导致的兼容性问题，在一些修改了底层的虚拟机结构的机器就无法支持。</p>
-<p>在Sophix中将原有所有字段逐一替换的方式改成了通过在底层memcpy的方法来完整替换ArtMethod。只要像这样把ArtMethod整个结构体完整替换，就能够把所有旧方法成员自动对应的换成新方法的成员。</p>
-<h6 id="冷启动修复原理"><a href="#冷启动修复原理" class="headerlink" title="冷启动修复原理"></a>冷启动修复原理</h6><p>上边说到腾讯系的热修复原理是通过把原有的dex和补丁包里的dex重新合成一个。Sophix的冷启动修复思想是把原先基线包里的dex中，去掉补丁中也有的类。这样，补丁+去除了补丁类的基线包就等于新App中的所有类。不过它不是真正的去掉基线包中的类，而是移除定义类的入口，对于类的具体内容不进行删除。</p>
-<h6 id="热替换修复的优缺点"><a href="#热替换修复的优缺点" class="headerlink" title="热替换修复的优缺点"></a>热替换修复的优缺点</h6><p>优点：热替换方式的修复无需重启可以直接生效，这种方式修复实时性更高。</p>
-<p>缺点：由于是在应用运行期间发生了变动，如果修改了某个方法的逻辑，就会导致它在修复前后的逻辑不一致，引发一些诡异的错误。因此热替换方式的热修复只适用于修复一些简单的BUG，如果要做一些功能方面的更新，不建议采用。</p>
-<h3 id="方案对比"><a href="#方案对比" class="headerlink" title="方案对比"></a>方案对比</h3><table>
-<thead>
-<tr>
-<th></th>
-<th>Tinker</th>
-<th>Sophix</th>
-<th>Amigo</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>类替换</td>
-<td>yes</td>
-<td>yes</td>
-<td>yes</td>
-</tr>
-<tr>
-<td>lib替换</td>
-<td>yes</td>
-<td>yes</td>
-<td>yes</td>
-</tr>
-<tr>
-<td>资源替换</td>
-<td>yes</td>
-<td>yes</td>
-<td>yes</td>
-</tr>
-<tr>
-<td>全平台支持</td>
-<td>yes</td>
-<td>yes</td>
-<td>2.1-7.1</td>
-</tr>
-<tr>
-<td>即时生效</td>
-<td>no</td>
-<td>yes</td>
-<td>no</td>
-</tr>
-<tr>
-<td>性能损耗</td>
-<td>中,有合成操作</td>
-<td>低，冷启动下有些损耗</td>
-<td>低</td>
-</tr>
-<tr>
-<td>补丁包大小</td>
-<td>小</td>
-<td>小</td>
-<td>大</td>
-</tr>
-</tbody>
-</table>
-<h3 id="热补丁的更新方式"><a href="#热补丁的更新方式" class="headerlink" title="热补丁的更新方式"></a>热补丁的更新方式</h3><p>1.pull通道，在登录的时候通过pull查询后台是否有对应的补丁包更新，这也是最常用的方式。这还需要后台搭建，提供补丁后台托管，版本管理，保证传输安全，管理历史记录，监控补丁的运行情况等。</p>
-<p>2.指定版本的push通道</p>
-<p>Tinker的有<a href="http://www.tinkerpatch.com/" target="_blank" rel="noopener">TinkerPatch</a>，不过它也是<a href="http://www.tinkerpatch.com/Price" target="_blank" rel="noopener">收费</a>的,可以针对我们的用户量来考虑是否使用。支持补丁下发，版本管理，补丁回退等功能。如果采用Tinker方案可以先考虑接入TinkerPatch。</p>
-<h3 id="已知问题"><a href="#已知问题" class="headerlink" title="已知问题"></a>已知问题</h3><p>1.主流的热修复框架Tinker，Sophix在最新的版本也支持了新增Activity，不过方式跟组件化一样，需要提前在原有AndroidManifest.xml文件中插桩实现。</p>
-<p>2.由于GooglePlay开发者条款协议，不建议在GooglePlay平台动态更新代码</p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>对比主流的Tinker方案和Sophix方案，性能相差并不太多。但由于Sophix是按照用户量<a href="https://help.aliyun.com/document_detail/57064.html?spm=5176.131995.673114.price_desc_pc.7cbd69fdXYV7DM" target="_blank" rel="noopener">收费</a>的，其接入成本，维护自然会容易些，而且有配套的服务后端。不过考虑虽然可能我们的app现在的用户量会少一点，不过考虑到后期可能的流量增加，其收费也是较高的。而且其具有的热替换代码修复也是有局限性，优势并不大。而对于其他框架Amigo来说，它的优势在于能够添加四大组件，不过考虑到热修复应该只能作为紧急修复线上严重问题时的补救措施，其核心在于下发的成功率和稳定性，对于添加组件的功能倒是其次。而且随着Amigo两三年前停止维护，其稳定性和新版本的兼容也是不够的。综上，可以考虑Tinker的方案来进行热修复的接入。</p>
-<p>最后，热修复作为一个临时解决线上问题的一个解决方案，我们应该尽量避免使用它们，应该尽量提高正常迭代版本的稳定性，以及合理的迭代周期，而不是太过于依赖热修复这种线上解决问题的这种方式。</p>
-<h3 id="参考-amp-amp-扩展阅读"><a href="#参考-amp-amp-扩展阅读" class="headerlink" title="参考 &amp;&amp; 扩展阅读"></a>参考 &amp;&amp; 扩展阅读</h3><p><a href="http://product.dangdang.com/25328008.html" target="_blank" rel="noopener">《深入探索Android热修复技术原理》</a></p>
-<p><a href="https://github.com/Tencent/tinker/wiki" target="_blank" rel="noopener">Tinker</a></p>
-<p><a href="https://github.com/eleme/Amigo" target="_blank" rel="noopener">Amigo</a></p>
-<p><a href="https://www.zybuluo.com/dodola/note/554061" target="_blank" rel="noopener">Tinker Dexdiff算法解析</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
       
     </footer>
   </div>
@@ -811,10 +582,11 @@
   </article>
 
 
-    
-  </section>
 
-  
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -822,6 +594,10 @@
 
 
           
+
+  
+
+
 
         </div>
         
@@ -842,8 +618,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -895,6 +680,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#Tinker原理解析"><span class="nav-number">1.</span> <span class="nav-text">Tinker原理解析</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#补丁包生成原理"><span class="nav-number">1.1.</span> <span class="nav-text">补丁包生成原理</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#知识准备"><span class="nav-number">1.2.</span> <span class="nav-text">知识准备</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#生成dex"><span class="nav-number">1.2.1.</span> <span class="nav-text">生成dex</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#一种可能的tinkerPatch算法"><span class="nav-number">1.3.</span> <span class="nav-text">一种可能的tinkerPatch算法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#生成差分包的原理"><span class="nav-number">1.4.</span> <span class="nav-text">生成差分包的原理</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#差分包和原dex合成新的dex"><span class="nav-number">1.5.</span> <span class="nav-text">差分包和原dex合成新的dex</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#补丁合成的原理"><span class="nav-number">1.6.</span> <span class="nav-text">补丁合成的原理</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#具体案例分析"><span class="nav-number">1.7.</span> <span class="nav-text">具体案例分析</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参考"><span class="nav-number">2.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -1028,6 +829,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 
