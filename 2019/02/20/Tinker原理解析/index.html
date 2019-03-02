@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT">
+  <meta name="keywords" content="hotfix,">
 
 
 
@@ -79,12 +79,13 @@
 
 
 
-<meta name="description" content="title:Tinker原理解析  [TOC] Tinker原理解析补丁包生成原理Tinker打补丁主要为两个步骤：1.通过执行gradke task tinkerPatchDebug(Release)生成补丁包。2.通过tinkerInstaller将补丁包进行合成。 我们先来分析第一步：tinkerPatchDebug task包括两个步骤，1.执行debug生成修复代码之后的apk。2.执行">
+<meta name="description" content="Tinker原理解析补丁包生成原理Tinker打补丁主要为两个步骤：1.通过执行gradke task tinkerPatchDebug(Release)生成补丁包。2.通过tinkerInstaller将补丁包进行合成。 我们先来分析第一步：tinkerPatchDebug task包括两个步骤，1.执行debug生成修复代码之后的apk。2.执行tinkerPatch生成补丁包。  1-7：构">
+<meta name="keywords" content="hotfix">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Hexo">
+<meta property="og:title" content="Tinker原理解析">
 <meta property="og:url" content="https://youuupeng.github.io/2019/02/20/Tinker原理解析/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="title:Tinker原理解析  [TOC] Tinker原理解析补丁包生成原理Tinker打补丁主要为两个步骤：1.通过执行gradke task tinkerPatchDebug(Release)生成补丁包。2.通过tinkerInstaller将补丁包进行合成。 我们先来分析第一步：tinkerPatchDebug task包括两个步骤，1.执行debug生成修复代码之后的apk。2.执行">
+<meta property="og:description" content="Tinker原理解析补丁包生成原理Tinker打补丁主要为两个步骤：1.通过执行gradke task tinkerPatchDebug(Release)生成补丁包。2.通过tinkerInstaller将补丁包进行合成。 我们先来分析第一步：tinkerPatchDebug task包括两个步骤，1.执行debug生成修复代码之后的apk。2.执行tinkerPatch生成补丁包。  1-7：构">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="c:/Users/peyo/Desktop/图片资料/tinker接入实践/tinker原理解析/tinkerPatch相关流程.png">
 <meta property="og:image" content="c:/Users/peyo/Desktop/图片资料/tinker接入实践/tinker原理解析/生成class文件.jpg">
@@ -100,10 +101,10 @@
 <meta property="og:image" content="c:/Users/peyo/Desktop/图片资料/tinker接入实践/tinker原理解析/tinker打补丁包基础流程.png">
 <meta property="og:image" content="c:/Users/peyo/Desktop/图片资料/tinker接入实践/tinker原理解析/Hello.dex结构.jpg">
 <meta property="og:image" content="c:/Users/peyo/Desktop/图片资料/tinker接入实践/tinker原理解析/World.dex结构.jpg">
-<meta property="og:updated_time" content="2019-03-02T06:37:37.903Z">
+<meta property="og:updated_time" content="2019-03-02T06:47:44.052Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hexo">
-<meta name="twitter:description" content="title:Tinker原理解析  [TOC] Tinker原理解析补丁包生成原理Tinker打补丁主要为两个步骤：1.通过执行gradke task tinkerPatchDebug(Release)生成补丁包。2.通过tinkerInstaller将补丁包进行合成。 我们先来分析第一步：tinkerPatchDebug task包括两个步骤，1.执行debug生成修复代码之后的apk。2.执行">
+<meta name="twitter:title" content="Tinker原理解析">
+<meta name="twitter:description" content="Tinker原理解析补丁包生成原理Tinker打补丁主要为两个步骤：1.通过执行gradke task tinkerPatchDebug(Release)生成补丁包。2.通过tinkerInstaller将补丁包进行合成。 我们先来分析第一步：tinkerPatchDebug task包括两个步骤，1.执行debug生成修复代码之后的apk。2.执行tinkerPatch生成补丁包。  1-7：构">
 <meta name="twitter:image" content="c:/Users/peyo/Desktop/图片资料/tinker接入实践/tinker原理解析/tinkerPatch相关流程.png">
 
 
@@ -140,7 +141,7 @@
 
 
 
-  <title> | Hexo</title>
+  <title>Tinker原理解析 | Hexo</title>
   
 
 
@@ -284,7 +285,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline"></h1>
+          <h1 class="post-title" itemprop="name headline">Tinker原理解析</h1>
         
 
         <div class="post-meta">
@@ -334,10 +335,7 @@
       
 
       
-        <p>title:Tinker原理解析</p>
-<hr>
-<p>[TOC]</p>
-<h4 id="Tinker原理解析"><a href="#Tinker原理解析" class="headerlink" title="Tinker原理解析"></a>Tinker原理解析</h4><h5 id="补丁包生成原理"><a href="#补丁包生成原理" class="headerlink" title="补丁包生成原理"></a>补丁包生成原理</h5><p>Tinker打补丁主要为两个步骤：1.通过执行gradke task tinkerPatchDebug(Release)生成补丁包。2.通过tinkerInstaller将补丁包进行合成。</p>
+        <h4 id="Tinker原理解析"><a href="#Tinker原理解析" class="headerlink" title="Tinker原理解析"></a>Tinker原理解析</h4><h5 id="补丁包生成原理"><a href="#补丁包生成原理" class="headerlink" title="补丁包生成原理"></a>补丁包生成原理</h5><p>Tinker打补丁主要为两个步骤：1.通过执行gradke task tinkerPatchDebug(Release)生成补丁包。2.通过tinkerInstaller将补丁包进行合成。</p>
 <p>我们先来分析第一步：tinkerPatchDebug task包括两个步骤，1.执行debug生成修复代码之后的apk。2.执行tinkerPatch生成补丁包。</p>
 <p><img src="C:\Users\peyo\Desktop\图片资料\tinker接入实践\tinker原理解析\tinkerPatch相关流程.png" alt="tinkerPatch相关流程"></p>
 <p>1-7：构建gradle tinkerPatch task</p>
@@ -548,6 +546,12 @@
     
 
     <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/hotfix/" rel="tag"># hotfix</a>
+          
+        </div>
       
 
       
