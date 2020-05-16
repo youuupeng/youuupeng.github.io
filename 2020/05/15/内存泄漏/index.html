@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="[TOC] 内存泄漏LeakCanary观察具体的指定对象创建一个RefWatcher，然后给予它一个需要观察的对象： 12345678910111213class Cat &amp;#123;&amp;#125;class Box &amp;#123;  Cat hiddenCat;&amp;#125;class Docker &amp;#123;  static Box container;&amp;#125;// ...Box box =">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hexo">
+<meta property="og:url" content="https://youuupeng.github.io/2020/05/15/内存泄漏/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="[TOC] 内存泄漏LeakCanary观察具体的指定对象创建一个RefWatcher，然后给予它一个需要观察的对象： 12345678910111213class Cat &amp;#123;&amp;#125;class Box &amp;#123;  Cat hiddenCat;&amp;#125;class Docker &amp;#123;  static Box container;&amp;#125;// ...Box box =">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://s1.ax1x.com/2020/05/15/YsMUds.png">
+<meta property="og:updated_time" content="2020-05-15T08:17:26.401Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Hexo">
+<meta name="twitter:description" content="[TOC] 内存泄漏LeakCanary观察具体的指定对象创建一个RefWatcher，然后给予它一个需要观察的对象： 12345678910111213class Cat &amp;#123;&amp;#125;class Box &amp;#123;  Cat hiddenCat;&amp;#125;class Docker &amp;#123;  static Box container;&amp;#125;// ...Box box =">
+<meta name="twitter:image" content="https://s1.ax1x.com/2020/05/15/YsMUds.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://youuupeng.github.io/2020/05/15/内存泄漏/">
+
+
+
+
+
+  <title> | Hexo</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/android/hotfix/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://youuupeng.github.io/2020/05/15/内存泄漏/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="youpeng">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline"></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-15T16:17:26+08:00">
+                2020-05-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>[TOC]</p>
+<h3 id="内存泄漏"><a href="#内存泄漏" class="headerlink" title="内存泄漏"></a>内存泄漏</h3><h4 id="LeakCanary"><a href="#LeakCanary" class="headerlink" title="LeakCanary"></a>LeakCanary</h4><h5 id="观察具体的指定对象"><a href="#观察具体的指定对象" class="headerlink" title="观察具体的指定对象"></a>观察具体的指定对象</h5><p>创建一个<em>RefWatcher</em>，然后给予它一个需要观察的对象：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">class Cat &#123;</span><br><span class="line">&#125;</span><br><span class="line">class Box &#123;</span><br><span class="line">  Cat hiddenCat;</span><br><span class="line">&#125;</span><br><span class="line">class Docker &#123;</span><br><span class="line">  static Box container;</span><br><span class="line">&#125;</span><br><span class="line">// ...</span><br><span class="line">Box box = new Box();</span><br><span class="line">Cat schrodingerCat = new Cat();</span><br><span class="line">box.hiddenCat = schrodingerCat;</span><br><span class="line">Docker.container = box;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// We expect schrodingerCat to be gone soon (or not), let&apos;s watch it.</span><br><span class="line">refWatcher.watch(schrodingerCat);</span><br></pre></td></tr></table></figure>
+<p>内存泄漏发生时：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">* GC ROOT static Docker.container</span><br><span class="line">* references Box.hiddenCat</span><br><span class="line">* leaks Cat instance</span><br></pre></td></tr></table></figure>
+<p>安装LeakCanary:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public class ExampleApplication extends Application &#123;</span><br><span class="line">  @Override public void onCreate() &#123;</span><br><span class="line">    super.onCreate();</span><br><span class="line">    LeakCanary.install(this);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h5><h5 id="LeakCanary如何工作"><a href="#LeakCanary如何工作" class="headerlink" title="LeakCanary如何工作"></a>LeakCanary如何工作</h5><ul>
+<li>检测遗留的实例</li>
+</ul>
+<p>LeakCanary是基于一个叫做ObjectWatcher Android的库。它通过侵入Android生命周期来自动在正确的时机（activity和fragment被销毁并且应该被回收的时候）去检测。这些被销毁的实例被传递给一个ObjectWatcher，它持有着它们（Activity和Fragmet）的引用。</p>
+<p>如果弱引用在等待5s并且运行垃圾回收器之后还未被清除，被观察的实例就被认为是遗留下来的，并且可能导致潜在的泄漏。</p>
+<ul>
+<li>Dump堆</li>
+</ul>
+<p>当遗留的实例达到一个阈值，LeakCanary dump Java堆到一个.hprof文件。默认的阈值是当app可见的时候是5个保留的实例，不可见的时候是1个保留的实例。</p>
+<ul>
+<li>分析堆</li>
+</ul>
+<p>LeakCanary使用Shark解析.hprof文件，然后查找出阻止遗留对象被垃圾回收所回收的引用链：<em>leak trace</em>。Leak trace的另一个名称是最短的从垃圾回收roots到保留对象的强引用路径。一旦leak trace确定下来后，LeakCanary使用Android framework本身的原理去演绎leak trace上的哪个实例是泄漏的。</p>
+<ul>
+<li>Grouping leak</li>
+</ul>
+<p>根据泄漏的状态信息，LeakCanary缩小引用链到一个可能的泄漏原因的子引用链，并且展示结果。相同泄漏原因的引用链被当成是同一种泄漏，所以根据同样的子链来进行泄漏原因的分组。</p>
+<h5 id="如何解决一个内存泄漏？"><a href="#如何解决一个内存泄漏？" class="headerlink" title="如何解决一个内存泄漏？"></a>如何解决一个内存泄漏？</h5><ul>
+<li>观察内存泄漏时的ui报告和logCat输出</li>
+</ul>
+<p><img src="https://s1.ax1x.com/2020/05/15/YsMUds.png" alt="leak trace"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">┬</span><br><span class="line">    ├─ leakcanary.internal.InternalLeakCanary</span><br><span class="line">    │    Leaking: NO (it&apos;s a GC root and a class is never leaking)</span><br><span class="line">    │    ↓ static InternalLeakCanary.application</span><br><span class="line">    ├─ com.example.leakcanary.ExampleApplication</span><br><span class="line">    │    Leaking: NO (Application is a singleton)</span><br><span class="line">    │    ↓ ExampleApplication.leakedViews</span><br><span class="line">    │                         ~~~~~~~~~~~</span><br><span class="line">    ├─ java.util.ArrayList</span><br><span class="line">    │    Leaking: UNKNOWN</span><br><span class="line">    │    ↓ ArrayList.elementData</span><br><span class="line">    │                ~~~~~~~~~~~</span><br><span class="line">    ├─ java.lang.Object[]</span><br><span class="line">    │    Leaking: UNKNOWN</span><br><span class="line">    │    ↓ array Object[].[0]</span><br><span class="line">    │                     ~~~</span><br><span class="line">    ├─ android.widget.TextView</span><br><span class="line">    │    Leaking: YES (View detached and has parent)</span><br><span class="line">    │    View#mAttachInfo is null (view detached)</span><br><span class="line">    │    View#mParent is set</span><br><span class="line">    │    View.mWindowAttachCount=1</span><br><span class="line">    │    ↓ TextView.mContext</span><br><span class="line">    ╰→ com.example.leakcanary.MainActivity</span><br><span class="line">         Leaking: YES (RefWatcher was watching this and MainActivity#mDestroyed</span><br><span class="line">is true)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>对象和引用</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">├─ android.widget.TextView</span><br></pre></td></tr></table></figure>
+<p>leak trace中的每个节点要么是一个Java对象，一个类，一个对象数组或者一个实例</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">│    ↓ TextView.mContext</span><br></pre></td></tr></table></figure>
+<p>每个节点都有一个引用指向下一个节点。在UI中，引用是用紫色标识的。在Logcat输出中，这个引用是用一个向下的箭头开始的。</p>
+<ul>
+<li>GC Root</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">┬</span><br><span class="line">    ├─ leakcanary.internal.InternalLeakCanary</span><br><span class="line">    │    Leaking: NO (it&apos;s a GC root and a class is never leaking)</span><br></pre></td></tr></table></figure>
+<p>leak trace的顶部是一个gc root。GC roots是特殊的对象，它们总是可达的。有四种GC roots值得注意：</p>
+<ol>
+<li>属于一个线程局部变量</li>
+<li>活动Java线程的实例</li>
+<li>类，在Android中不会卸载</li>
+<li>原生引用，由原生代码控制</li>
+</ol>
+<ul>
+<li>泄漏的实例</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">╰→ com.example.leakcanary.MainActivity</span><br><span class="line">         Leaking: YES (RefWatcher was watching this and MainActivity#mDestroyed</span><br><span class="line">is true)</span><br></pre></td></tr></table></figure>
+<p>在leak trace的底部是泄漏的实例。这个实例被传递给AppWatcher.objectWatcher来确定它会被垃圾回收，并且最终不被垃圾回收，则会触发LeakCanary.</p>
+<ul>
+<li>引用链</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">    │    ↓ static InternalLeakCanary.application</span><br><span class="line">...</span><br><span class="line">    │    ↓ ExampleApplication.leakedViews</span><br><span class="line">...</span><br><span class="line">    │    ↓ ArrayList.elementData</span><br><span class="line">...</span><br><span class="line">    │    ↓ array Object[].[0]</span><br><span class="line">...</span><br><span class="line">    │    ↓ TextView.mContext</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>从GC root到泄漏实例的引用链是会阻止泄漏实例被垃圾回收的链。如果能够及时识别出在那个点不该存在的引用，那么就可以推断出为什么它仍然错误的被设置，然后修复内存泄漏。</p>
+<ul>
+<li>提示和标签</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">├─ android.widget.TextView</span><br><span class="line">    │    Leaking: YES (View detached and has parent)</span><br><span class="line">    │    View#mAttachInfo is null (view detached)</span><br><span class="line">    │    View#mParent is set</span><br><span class="line">    │    View.mWindowAttachCount=1</span><br></pre></td></tr></table></figure>
+<p>LeakCanary运行试探法来决定leak trace上的节点的生命周期状态，从而决定它们是否泄漏。比如，如果一个view有：<code>View#mAttachInfo = null</code>和<code>mParent != null</code>，则它已经是detached并且有一个parent，所以这个view可能就存在泄漏。在leak trace上，遍历每个节点会有<code>Leaking: YES / NO / UNKNOWN</code>和括号中的解释。LeakCanary可以提取额外的关于节点状态的信息，比如：<code>View.mWindowAttachCount=1</code>，LeanCanary来自于一组默认的提示：<a href="https://square.github.io/leakcanary/api/shark-android/shark/-android-object-inspectors/" target="_blank" rel="noopener">AndroidObjectInspectors</a>。可以通过更新<a href="https://square.github.io/leakcanary/api/leakcanary-android-core/leakcanary/-leak-canary/-config/object-inspectors/" target="_blank" rel="noopener">LeakCanary.Config.objectInspectors</a> 来更新自己的提示推断。</p>
+<ul>
+<li>缩小导致泄漏的原因</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">┬</span><br><span class="line">    ├─ android.provider.FontsContract</span><br><span class="line">    │    Leaking: NO (ExampleApplication↓ is not leaking and a class is never leaking)</span><br><span class="line">    │    GC Root: System class</span><br><span class="line">    │    ↓ static FontsContract.sContext</span><br><span class="line">    ├─ com.example.leakcanary.ExampleApplication</span><br><span class="line">    │    Leaking: NO (Application is a singleton)</span><br><span class="line">    │    ExampleApplication does not wrap an activity context</span><br><span class="line">    │    ↓ ExampleApplication.leakedViews</span><br><span class="line">    │                         ~~~~~~~~~~~</span><br><span class="line">    ├─ java.util.ArrayList</span><br><span class="line">    │    Leaking: UNKNOWN</span><br><span class="line">    │    ↓ ArrayList.elementData</span><br><span class="line">    │                ~~~~~~~~~~~</span><br><span class="line">    ├─ java.lang.Object[]</span><br><span class="line">    │    Leaking: UNKNOWN</span><br><span class="line">    │    ↓ array Object[].[1]</span><br><span class="line">    │                     ~~~</span><br><span class="line">    ├─ android.widget.TextView</span><br><span class="line">    │    Leaking: YES (View.mContext references a destroyed activity)</span><br><span class="line">    │    ↓ TextView.mContext</span><br><span class="line">    ╰→ com.example.leakcanary.MainActivity</span><br><span class="line">         Leaking: YES (TextView↑ is leaking and Activity#mDestroyed is true and ObjectWatcher was watching this)</span><br></pre></td></tr></table></figure>
+<p>如果一个节点没有泄漏，那么之前的任何指向它的引用都不是泄漏的来源，同时不会泄漏。类似地，如果一个节点泄漏了，那么leak trace上这个节点之下的所有节点也存在泄漏。基于此，我们可以推断出泄漏是在最后一个<code>Leaking: NO</code>和第一个<code>Leaking: YES</code>之间。</p>
+<p>LeakCanary在UI中用一个红色的下划线来高亮显示，或者在Logcat输出中用<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">在这个例子中，最后一个`Leaking: NO`是在`com.example.leakcanary.ExampleApplication`并且第一个`Leaking: YES`是在`android.widget.TextView`，所以泄漏发生在下面3个引用之一：</span><br><span class="line"></span><br><span class="line">```</span><br><span class="line">...</span><br><span class="line">    │    ↓ ExampleApplication.leakedViews</span><br><span class="line">    │                         ~~~~~~~~</span><br></pre></td></tr></table></figure></p>
+<p>…<br>    │    ↓ ArrayList.elementData<br>    │                <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">    │    ↓ array Object[].[0]</span><br><span class="line">    │</span><br></pre></td></tr></table></figure></p>
+<p>…<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">跟踪源码，发现`ExampleApplication`有一个list 字段：</span><br></pre></td></tr></table></figure></p>
+<p>open class ExampleApplication : Application() {<br>  val leakedViews = mutableListOf<view>()<br>}<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">`ArrayList`的实现本身不太可能有bug，所以泄漏发生的原因是我们添加views到`ExampleApplication.leakedViews`。如果不这样做，就能解决这个泄漏。</span><br><span class="line"></span><br><span class="line">#### Shark使用</span><br><span class="line"></span><br><span class="line">##### 下载</span><br><span class="line"></span><br><span class="line">在[这里](https://square.github.io/leakcanary/shark/)下载sharkCli到本地：D:\shark-cli-2.0-beta-1，然后用git bash打开一个已有的hprof文件：</span><br><span class="line"></span><br><span class="line">![1569572394721](https://s1.ax1x.com/2020/05/15/YslDrF.png)</span><br><span class="line"></span><br><span class="line">可以看到它其实跟用leakcanary安装在app上边dump出来的效果一样，只是这样方便在电脑上看。（当然logcat中也有打印就是啦...）</span><br><span class="line"></span><br><span class="line">### 源码解析</span><br><span class="line"></span><br><span class="line">根据LeakCanary的源码组成模块原理解析：</span><br><span class="line"></span><br><span class="line">#### Shark</span><br><span class="line"></span><br><span class="line">堆分析器</span><br><span class="line"></span><br><span class="line">#### ObjectWatcher</span><br><span class="line"></span><br><span class="line">观察保留的对象并且检测他们是否变得弱可达</span><br><span class="line"></span><br><span class="line">组件id:`com.squareup.leakcanary:leakcanary-object-watcher`</span><br><span class="line"></span><br><span class="line">##### 原理解析</span><br><span class="line"></span><br><span class="line">**GcTrigger**:利用AOSP中的[代码](https://android.googlesource.com/platform/libcore/+/master/support/src/test/java/libcore/)触发垃圾回收，并且将`KeyedWeakReference`与其关联的`ReferenceQueue`引用队列进行入列。</span><br><span class="line"></span><br><span class="line">垃圾回收：采用`Runtime.gc()`。`System.gc()`不会每次都垃圾收集。</span><br><span class="line"></span><br><span class="line">引用队列入列：在`Finalization`前线程睡眠100ms，给予足够的时间进行入列。</span><br><span class="line"></span><br><span class="line">联想一下，我们如果操作判断activity是否泄漏：进入退出一个activity，触发gc，dump hprof，用mat判断里边是否仍然有该activity对象。</span><br><span class="line"></span><br><span class="line">**KeyedWeakReference**：继承于`WeakReference`的弱引用对象。用来判断哪些对象是否是弱可达。`ObjectWatcher`会持有这个对象的实例，通过`LinkedHashMap`将`key`和该对象进行映射保存起来。然后通过`key`来判断哪些`KeyedWeakReference`实例还未入列到关联的`ReferenceQueue`引用队列。构造函数参数传入被观察的对象以及引用队列，构造方法会调用父类也就是WeakReference的构造方法。</span><br><span class="line"></span><br><span class="line">**而传入被观察的对象以及引用队列跟内存泄漏有什么关系呢？**</span><br><span class="line"></span><br><span class="line">**WeakReference**：我们知道对象根据引用类型氛围强引用，软引用，弱引用。每次进行垃圾回收的时候会自动清除所有的弱引用对象和该弱可达对象通过一个强引用和软引用链引用到的其他弱引用。同时，它会将之前的弱可达对象声明为finalizable。与此同时，可能在之后的某个时刻它会将刚清除的弱引用以及与其注册的引用队列入列。</span><br><span class="line"></span><br><span class="line">所以前面在`KeyedWeakReference`构造函数中传入的被观察对象和引用队列就是用来进行注册关联的。</span><br><span class="line"></span><br><span class="line">**小结**：我们所观察的对象在被垃圾回收后可以在引用队列中找到，所以如果引用队列中如果没有该对象，说明它被回收了。如果它还在，那么说明此时它仍然在被持有。</span><br><span class="line"></span><br><span class="line">**ObjectWatcher**：在`使用`一节中，可以看到我们用`ObjectWatcher`来观察对象。它会创建`KeyedWeakReference`实例来引用观察对象，并且通过`checkRetainedExecutor`来检测这些对象是否已经被清除了。如果没有，这些对象会被当成遗留下来的，然后`ObjectWatcher`会在执行线程调用onObjectRetainedListener回调通知。`ObjectWatcher`是线程安全的。</span><br><span class="line"></span><br><span class="line">*checkRetainedExecutor*：在后台线程中执行任务，重要的是给GC识别弱可达对象。</span><br><span class="line"></span><br><span class="line">*onObjectRetainedListeners*:识别到遗留对象时的回调接口。</span><br><span class="line"></span><br><span class="line">实际上，`ObjectWatcher`的内部编码就是实现了我们在`小结`中所说的事。</span><br></pre></td></tr></table></figure></view></p>
+<p>//watchedObjects用来保存需要观察的对象<br>private val watchedObjects = mutableMapOf&lt;String, KeyedWeakReference&gt;()<br>//引用队列<br>private val queue = ReferenceQueue<any>()<br>//Synchronized用来保证线程安全，watch观察对象的方法<br>@Synchronized fun watch(watchedObject: Any) {<br>    watch(watchedObject, “”)<br>  }@Synchronized fun watch(<br>    watchedObject: Any,<br>    name: String<br>  ) {<br>    if (!isEnabled()) {<br>      return<br>    }<br>    //先移除掉弱可达的对象<br>    removeWeaklyReachableObjects()<br>    val key = UUID.randomUUID()<br>        .toString()<br>    val watchUptimeMillis = clock.uptimeMillis()<br>    //生成KeyedWeakReference对象，将被观察对象与引用队列关联<br>    val reference =<br>      KeyedWeakReference(watchedObject, key, name, watchUptimeMillis, queue)<br>    SharkLog.d {<br>        “Watching “ +<br>            (if (watchedObject is Class&lt;*&gt;) watchedObject.toString() else “instance of ${watchedObject.javaClass.name}”) +<br>            (if (name.isNotEmpty()) “ named $name” else “”) +<br>            “ with key $key”<br>    }<br>    //保存在待观察列表中<br>    watchedObjects[key] = reference<br>    //在后台线程执行分析判断（默认在object-watcher-android InternalAppWatcher#checkRetainedExecutor传入，5s后执行这个线程，即默认这个对象存在5s还存在，则判定泄漏）<br>    checkRetainedExecutor.execute {<br>      moveToRetained(key)<br>    }<br>  }</any></p>
+<p>  @Synchronized private fun moveToRetained(key: String) {<br>  //step1.检测前再次清空<br>    removeWeaklyReachableObjects()<br>    //step2.在step1中已经将弱引用的对象移除掉了，此时如果通过key还能在我们的本地变量中找到，说明它仍然被持有<br>    val retainedRef = watchedObjects[key]<br>    if (retainedRef != null) {<br>      retainedRef.retainedUptimeMillis = clock.uptimeMillis()<br>      onObjectRetainedListeners.forEach { it.onObjectRetained() }<br>    }<br>  }</p>
+<p>  private fun removeWeaklyReachableObjects() {<br>    //弱引用指向的对象在变得弱可达的时候会入列。这个动作在垃圾回收真正开始前（常见的误解是在垃圾回收之后发生这个动作）<br>    var ref: KeyedWeakReference?<br>    do {<br>      ref = queue.poll() as KeyedWeakReference?<br>      if (ref != null) {<br>      //如果引用队列中没有这个对象，则没有内存泄漏，将它从被观察对象中移除。<br>        watchedObjects.remove(ref.key)<br>      }<br>    } while (ref != null)<br>  }<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">#### ObjectWatcher Android</span><br><span class="line"></span><br><span class="line">自动检测遗留的已经销毁的activity和fragment，跟上面库的区别在于它是用来检测Android中独有的activity，fragment这些组件</span><br><span class="line"></span><br><span class="line">组件id:`com.squareup.leakcanary:leakcanary-object-watcher-android`</span><br><span class="line"></span><br><span class="line">##### 原理解析</span><br><span class="line"></span><br><span class="line">**AppWatcher**：`android`应用中使用`ObjectWatcher`的入口API，前面说到`AppWatcher.objectWatcher`负责检测保留的对象，`AppWatcher`在app启动的时候自动配置来传入activity和fragment实例。调用`ObjectWatcher.watch`来观察任何可能期望到的不可达的对象</span><br><span class="line"></span><br><span class="line">**首先，我们会发现在安装我们app的时候，会自动安装leakcanary应用**</span><br><span class="line"></span><br><span class="line">这个现象是如何实现的呢？它的实现就是在ObjectWatcher Android之中，首先在`Androidmanifest.xml`中会发现注册了一个`content provider`</span><br></pre></td></tr></table></figure></p>
+<p><provider android:name="leakcanary.internal.AppWatcherInstaller$MainProcess" android:authorities="${applicationId}.leakcanary-installer" android:exported="false"><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">`Content providers`会在`application`类创建之前加载，这里注册的`AppWatcherInstaller`作用是在`application`启动的时候安装`leakcanary.AppWatcher`.注意到默认是在`MainProcess`中进行安装，当指定`leakcanary-android-process`组件的时候，会在*LeakCanaryProcess*进程中进行安装。在主进程安装的时候调用`InternalAppWatcher`进行安装：</span><br></pre></td></tr></table></figure></provider></p>
+<p>init {<br>//初始化的时候通过反射拿到InternalLeakCanary对象实例<br>    val internalLeakCanary = try {<br>      val leakCanaryListener = Class.forName(“leakcanary.internal.InternalLeakCanary”)<br>      leakCanaryListener.getDeclaredField(“INSTANCE”)<br>          .get(null)<br>    } catch (ignored: Throwable) {<br>      NoLeakCanary<br>    }<br>    @kotlin.Suppress(“UNCHECKED_CAST”)<br>    onAppWatcherInstalled = internalLeakCanary as (Application) -&gt; Unit<br>  }</p>
+<p>  fun install(application: Application) {<br>    SharkLog.logger = DefaultCanaryLog()<br>    SharkLog.d { “Installing AppWatcher” }<br>    //检查主线程<br>    checkMainThread()<br>    //如果已经初始化过了，则直接返回<br>    if (this::application.isInitialized) {<br>      return<br>    }<br>    InternalAppWatcher.application = application</p>
+<pre><code>val configProvider = { AppWatcher.config }
+//注册Activity和fragment销毁的监听
+ActivityDestroyWatcher.install(application, objectWatcher, configProvider)
+FragmentDestroyWatcher.install(application, objectWatcher, configProvider)
+onAppWatcherInstalled(application)
+</code></pre><p>  }</p>
+<p>  internal class ActivityDestroyWatcher private constructor(<br>  private val objectWatcher: ObjectWatcher,<br>  private val configProvider: () -&gt; Config<br>) {</p>
+<p>//返回一个sam，委托noOpDelegate通过动态代理拿到Application.ActivityLifecycleCallbacks对象，拿到其中的sam：onActivityDestroyed,拿到其中的activity。<br>  private val lifecycleCallbacks =<br>    object : Application.ActivityLifecycleCallbacks by noOpDelegate() {<br>      override fun onActivityDestroyed(activity: Activity) {<br>        if (configProvider().watchActivities) {<br>        //通过构造函数传入的objectWatcher监听，这样在application中，所有的Activity销毁都能被监听到<br>          objectWatcher.watch(activity)<br>        }<br>      }<br>    }</p>
+<p>  companion object {<br>    fun install(<br>      application: Application,<br>      objectWatcher: ObjectWatcher,<br>      configProvider: () -&gt; Config<br>    ) {<br>      val activityDestroyWatcher =<br>        ActivityDestroyWatcher(objectWatcher, configProvider)<br>//注册application中Activity的回调      application.registerActivityLifecycleCallbacks(activityDestroyWatcher.lifecycleCallbacks)<br>    }<br>  }<br>}<br>Fragment的生命周期监听类似，不过Fragment考虑的情况多一些，除了onFragmentDestroyed回调，还有onFragmentViewDestroyed回调，同时还要监听Activity：<br>application.registerActivityLifecycleCallbacks(object : Application.ActivityLifecycleCallbacks by noOpDelegate() {<br>      override fun onActivityCreated(<br>        activity: Activity,<br>        savedInstanceState: Bundle?<br>      ) {<br>        for (watcher in fragmentDestroyWatchers) {<br>          watcher(activity)<br>        }<br>      }<br>    })<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">前面完成了监听Activity和fragment，接着调用`onAppWatcherInstalled(application)`</span><br><span class="line"></span><br><span class="line">这个函数的调用是在哪呢？它的作用是什么？</span><br><span class="line"></span><br><span class="line">`onAppWatcherInstalled`用到了`invoke`约定，所以我们看`InternalLeakCanary`的`invoke`函数：</span><br></pre></td></tr></table></figure></p>
+<p>override fun invoke(application: Application) {<br>  this.application = application<br>//注册检测到对象遗留的回调监听<br>  AppWatcher.objectWatcher.addOnObjectRetainedListener(this)<br>//初始化数据：<br>  val heapDumper = AndroidHeapDumper(application, leakDirectoryProvider)</p>
+<p>  val gcTrigger = GcTrigger.Default</p>
+<p>  val configProvider = { LeakCanary.config }</p>
+<p>  val handlerThread = HandlerThread(LEAK_CANARY_THREAD_NAME)<br>  handlerThread.start()<br>  val backgroundHandler = Handler(handlerThread.looper)</p>
+<p>  heapDumpTrigger = HeapDumpTrigger(<br>      application, backgroundHandler, AppWatcher.objectWatcher, gcTrigger, heapDumper,<br>      configProvider<br>  )<br>  //结束初始化<br>  //可见性监听器（不同可见性下，内存泄漏条件中泄漏对象判定不同）<br>  application.registerVisibilityListener { applicationVisible -&gt;<br>    this.applicationVisible = applicationVisible<br>    heapDumpTrigger.onApplicationVisibilityChanged(applicationVisible)<br>  }<br>  //判断是否已经有桌面快捷图标，如果没有，则在launcher生成图标快捷键<br>  addDynamicShortcut(application)</p>
+<p>  disableDumpHeapInInstrumentationTests()<br>}<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">前面我们讲过了在`ObjectWatcher`中发生对象泄漏时会有回调，这里我们也监听了，那么发生监听时，会发生什么：</span><br></pre></td></tr></table></figure></p>
+<p>override fun onObjectRetained() {<br>  if (this::heapDumpTrigger.isInitialized) {<br>    heapDumpTrigger.onObjectRetained()<br>  }<br>}</p>
+<p>====HeapDumpTrigger#onObjectRetained（）====<br>fun onObjectRetained() {<br>    scheduleRetainedObjectCheck(“found new object retained”)<br>  }</p>
+<p>  private fun scheduleRetainedObjectCheck(reason: String) {<br>    if (checkScheduled) {<br>      SharkLog.d { “Already scheduled retained check, ignoring ($reason)” }<br>      return<br>    }<br>    checkScheduled = true<br>    //前面我们传入的HandlerThread中的handler,名为LEAK_CANARY_THREAD_NAME<br>    backgroundHandler.post {<br>      checkScheduled = false<br>      //真正的检测遗留的对象<br>      checkRetainedObjects(reason)<br>    }<br>  }</p>
+<p>   private fun checkRetainedObjects(reason: String) {<br>    …<br>        //拿到遗留的泄漏对象个数<br>    var retainedReferenceCount = objectWatcher.retainedObjectCount</p>
+<pre><code>if (retainedReferenceCount &gt; 0) {
+  gcTrigger.runGc()
+  retainedReferenceCount = objectWatcher.retainedObjectCount
+}
+</code></pre><p>//app可见的时候，泄漏的对象超过（默认）5个时，继续进一步操作。（避免每泄漏一个对象都dump等等，影响开发者）<br>    if (checkRetainedCount(retainedReferenceCount, config.retainedVisibleThreshold)) return</p>
+<pre><code>if (!config.dumpHeapWhenDebugging &amp;&amp; DebuggerControl.isDebuggerAttached) {
+  showRetainedCountWithDebuggerAttached(retainedReferenceCount)
+  scheduleRetainedObjectCheck(&quot;debugger was attached&quot;, WAIT_FOR_DEBUG_MILLIS)
+  SharkLog.d {
+      &quot;Not checking for leaks while the debugger is attached, will retry in $WAIT_FOR_DEBUG_MILLIS ms&quot;
+  }
+  return
+}
+
+SharkLog.d { &quot;Found $retainedReferenceCount retained references, dumping the heap&quot; }
+//记录dump的时间，减去检测到对象遗留的时间，就是对象泄漏的时间
+val heapDumpUptimeMillis = SystemClock.uptimeMillis()
+KeyedWeakReference.heapDumpUptimeMillis = heapDumpUptimeMillis
+dismissRetainedCountNotification()
+//dump文件，这里做了2件事。1.新建以当前时间为名称的文件夹。2.用Debug.dumpHprofData(heapDumpFile.absolutePath)来dump hprof文件数据到这个文件中
+val heapDumpFile = heapDumper.dumpHeap()
+if (heapDumpFile == null) {
+  SharkLog.d { &quot;Failed to dump heap, will retry in $WAIT_AFTER_DUMP_FAILED_MILLIS ms&quot; }
+  scheduleRetainedObjectCheck(&quot;failed to dump heap&quot;, WAIT_AFTER_DUMP_FAILED_MILLIS)
+  showRetainedCountWithHeapDumpFailed(retainedReferenceCount)
+  return
+}
+lastDisplayedRetainedObjectCount = 0
+objectWatcher.clearObjectsWatchedBefore(heapDumpUptimeMillis)
+</code></pre><p>//运行进程来分析dump文件<br>    HeapAnalyzerService.runAnalysis(application, heapDumpFile)<br>  }<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">启动service之后</span><br></pre></td></tr></table></figure></p>
+<p>override fun onHandleIntentInForeground(intent: Intent?) {<br>  //设置线程优先级为后台线程，避免影响主线程<br>  Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND)<br>  val heapDumpFile = intent.getSerializableExtra(HEAPDUMP_FILE_EXTRA) as File</p>
+<p>  val heapAnalyzer = HeapAnalyzer(this)<br>  val config = LeakCanary.config</p>
+<p>//真正的分析过程<br>  val heapAnalysis =<br>    heapAnalyzer.analyze(<br>        heapDumpFile, config.referenceMatchers, config.computeRetainedHeapSize, config.objectInspectors,<br>        if (config.useExperimentalLeakFinders) config.objectInspectors else listOf(<br>            ObjectInspectors.KEYED_WEAK_REFERENCE<br>        )<br>    )<br>//分析结果的回调<br>  config.onHeapAnalyzedListener.onHeapAnalyzed(heapAnalysis)<br>}<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
+<p>class HeapAnalyzer{<br>//搜索heapDumpFile文件中的泄漏实例，然后计算从这些实例到GC Roots的最短强引用路径<br>    fun analyze(<br>    heapDumpFile: File,<br>    referenceMatchers: List<referencematcher> = emptyList(),<br>    computeRetainedHeapSize: Boolean = false,<br>    objectInspectors: List<objectinspector> = emptyList(),<br>    leakFinders: List<objectinspector> = objectInspectors,<br>    proguardMapping: ProguardMapping? = null<br>  ): HeapAnalysis {<br>    val analysisStartNanoTime = System.nanoTime()</objectinspector></objectinspector></referencematcher></p>
+<pre><code>if (!heapDumpFile.exists()) {
+  val exception = IllegalArgumentException(&quot;File does not exist: $heapDumpFile&quot;)
+  //文件不存在，则直接到REPORTING_HEAP_ANALYSIS阶段
+  listener.onAnalysisProgress(REPORTING_HEAP_ANALYSIS)
+  return HeapAnalysisFailure(
+      heapDumpFile, System.currentTimeMillis(), since(analysisStartNanoTime),
+      HeapAnalysisException(exception)
+  )
+}
+
+try {
+//解析heap dump文件阶段（第1个阶段）
+  listener.onAnalysisProgress(PARSING_HEAP_DUMP)
+  Hprof.open(heapDumpFile)
+      .use { hprof -&gt;
+      //1.将dump文件中的数据根据一定的解析规则读取出来，按照索引信息封装到HeapGraph对象中
+        val graph = HprofHeapGraph.indexHprof(hprof, proguardMapping)
+                    //拿到泄漏的对象
+        val findLeakInput = FindLeakInput(
+            graph, leakFinders, referenceMatchers, computeRetainedHeapSize, objectInspectors
+        )
+        //查找到的泄漏原因分为应用泄漏和库泄漏
+        val (applicationLeaks, libraryLeaks) = findLeakInput.findLeaks()
+        //解析完毕，得到结果
+        listener.onAnalysisProgress(REPORTING_HEAP_ANALYSIS)
+        return HeapAnalysisSuccess(
+            heapDumpFile, System.currentTimeMillis(), since(analysisStartNanoTime),
+            applicationLeaks, libraryLeaks
+        )
+      }
+} catch (exception: Throwable) {
+  listener.onAnalysisProgress(REPORTING_HEAP_ANALYSIS)
+  return HeapAnalysisFailure(
+      heapDumpFile, System.currentTimeMillis(), since(analysisStartNanoTime),
+      HeapAnalysisException(exception)
+  )
+}
+</code></pre><p>  }<br>}<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
+<p>private fun FindLeakInput.findLeaks(): Pair&lt;List<applicationleak>, List<libraryleak>&gt; {<br>  val leakingInstanceObjectIds = findLeakingObjects()</libraryleak></applicationleak></p>
+<p>  val pathFinder = PathFinder(graph, listener, referenceMatchers)<br>  val pathFindingResults =<br>  //查找泄漏引用到gc root的最短路径。包含第4个阶段（FINDING_DOMINATORS）<br>    pathFinder.findPathsFromGcRoots(leakingInstanceObjectIds, computeRetainedHeapSize)<br>//构建泄漏追踪<br>  return buildLeakTraces(pathFindingResults)<br>}</p>
+<p>private fun FindLeakInput.findLeakingObjects(): Set<long> {<br>//第2个阶段：FINDING_LEAKING_INSTANCES查找泄漏对象<br>    listener.onAnalysisProgress(FINDING_LEAKING_INSTANCES)<br>    return graph.objects<br>        .filter { objectRecord -&gt;<br>          val reporter = ObjectReporter(objectRecord)<br>          leakFinders.any { inspector -&gt;<br>          //监听堆中找到的类，实例，数组等等。其具体实现分别是（shark-android#AndroidObjectInspectors和shark#ObjectInspectors）<br>          //具体可以看一下AndroidObjectInspectors中监听的view,editor，匿名内部类这些对象<br>            inspector.inspect(reporter)<br>            reporter.leakingReasons.isNotEmpty()<br>          }<br>        }<br>        .map { it.objectId }<br>        .toSet()<br>  }<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">第3个阶段：FINDING_PATHS_TO_LEAKING_OBJECTS</span><br></pre></td></tr></table></figure></long></p>
+<p>fun findPathsFromGcRoots(<br>  leakingObjectIds: Set<long>,<br>  computeRetainedHeapSize: Boolean<br>): PathFindingResults {<br>  listener.onAnalysisProgress(FINDING_PATHS_TO_LEAKING_OBJECTS)</long></p>
+<p>  val sizeOfObjectInstances = determineSizeOfObjectInstances(graph)</p>
+<p>  val state = State(leakingObjectIds, sizeOfObjectInstances, computeRetainedHeapSize)<br>//查找gc roots到实例的路径<br>  return state.findPathsFromGcRoots()<br>}<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
+<p>private fun FindLeakInput.buildLeakTraces(pathFindingResults: PathFindingResults): Pair&lt;List<applicationleak>, List<libraryleak>&gt; {<br>//包含2个阶段：COMPUTING_NATIVE_RETAINED_SIZE,和COMPUTING_RETAINED_SIZE,<br>  val retainedSizes = computeRetainedSizes(pathFindingResults)</libraryleak></applicationleak></p>
+<p>  listener.onAnalysisProgress(BUILDING_LEAK_TRACES)</p>
+<p>  val applicationLeaks = mutableListOf<applicationleak>()<br>  val libraryLeaks = mutableListOf<libraryleak>()</libraryleak></applicationleak></p>
+<p>  val deduplicatedPaths = deduplicateShortestPaths(pathFindingResults.pathsToLeakingObjects)</p>
+<p>  deduplicatedPaths.forEachIndexed { index, pathNode -&gt;<br>    val shortestChildPath = mutableListOf<childnode>()</childnode></p>
+<pre><code>var node: ReferencePathNode = pathNode
+while (node is ChildNode) {
+  shortestChildPath.add(0, node)
+  node = node.parent
+}
+val rootNode = node as RootNode
+
+val leakTrace =
+  buildLeakTrace(graph, objectInspectors, rootNode, shortestChildPath)
+
+val className =
+  recordClassName(graph.findObjectById(pathNode.objectId))
+
+val firstLibraryLeakNode = if (rootNode is LibraryLeakNode) rootNode else
+  shortestChildPath.firstOrNull { it is LibraryLeakNode } as LibraryLeakNode?
+
+if (firstLibraryLeakNode != null) {
+  val matcher = firstLibraryLeakNode.matcher
+  libraryLeaks += LibraryLeak(
+      className, leakTrace, retainedSizes?.get(index), matcher.pattern, matcher.description
+  )
+} else {
+  applicationLeaks += ApplicationLeak(className, leakTrace, retainedSizes?.get(index))
+}
+</code></pre><p>  }<br>  return applicationLeaks to libraryLeaks<br>}<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">+ 泄漏引用通过字典树查找</span><br><span class="line">+ hprof文件在Android中的解析[对象](https://android.googlesource.com/platform/tools/base/+/studio-master-dev/perflib/src/main/java/com/android/tools/perflib)</span><br><span class="line"></span><br><span class="line">#### LeakCanary</span><br><span class="line"></span><br><span class="line">+ Dump堆并且进行分析</span><br><span class="line"></span><br><span class="line">+ 依赖于ObjectWatcher Android</span><br><span class="line"></span><br><span class="line">组件id:com.squareup.leakcanary:leakcanary-android</span><br><span class="line"></span><br><span class="line">#### LeakCanary Android separate process</span><br><span class="line"></span><br><span class="line">默认进行内存泄漏检测的进程是在应用所在的进程。</span><br><span class="line"></span><br><span class="line">这个liabrary顾名思义，让LeakCanary运行于独立app主进程之外的其他进程</span><br><span class="line"></span><br><span class="line">组件id:com.squareup.leakcanary:leakcanary-android-process(替换com.squareup.leakcanary:leakcanary-android)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#### 使用</span><br><span class="line"></span><br><span class="line">一般情况下，我们只要在gradle中配置debugImplementaion就可以自动检测了。当然我们也可以手动检测有生命周期的其他对象，比如fragment，service，Dagger 组件，等等。这里用到AppWatcher.objectWatcher来观察应该被垃圾回收的实例：</span><br></pre></td></tr></table></figure></p>
+<p>class MyService : Service {</p>
+<p>  // …</p>
+<p>  override fun onDestroy() {<br>    super.onDestroy()<br>    AppWatcher.objectWatcher.watch(this)<br>  }<br>}<br><code>`</code></p>
+<h4 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h4><p>文章<a href="https://medium.com/square-corner-blog/leakcanary-detect-all-memory-leaks-875ff8360745" target="_blank" rel="noopener">LeakCanary: Detect all memory leaks!</a></p>
+<p><a href="https://square.github.io/leakcanary/fundamentals/" target="_blank" rel="noopener">官方文档</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/03/10/testfile/" rel="next" title="testfile">
+                <i class="fa fa-chevron-left"></i> testfile
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">youpeng</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/youuupeng" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#内存泄漏"><span class="nav-number">1.</span> <span class="nav-text">内存泄漏</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#LeakCanary"><span class="nav-number">1.1.</span> <span class="nav-text">LeakCanary</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#观察具体的指定对象"><span class="nav-number">1.1.1.</span> <span class="nav-text">观察具体的指定对象</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#介绍"><span class="nav-number">1.1.2.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#LeakCanary如何工作"><span class="nav-number">1.1.3.</span> <span class="nav-text">LeakCanary如何工作</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#如何解决一个内存泄漏？"><span class="nav-number">1.1.4.</span> <span class="nav-text">如何解决一个内存泄漏？</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参考"><span class="nav-number">1.2.</span> <span class="nav-text">参考</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">youpeng</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
